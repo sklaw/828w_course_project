@@ -1,8 +1,8 @@
 hyperparam_space = {
-    "window_size_in_bytes_to_gen": [1, 2, 4, 8, 16, 32, 64, 128],
+    "window_size_in_bytes_to_gen": [1, 2, 4, 8, 16],
     "rand_seed_used_in_all_dataset_generation": 1234,
     "executable_used": ["A.dll", "B.exe"],
-    "number_of_samples_per_class": [100, 1_000, 10_000, 100_000]
+    "number_of_samples_per_class": [100, 1_000, 10_000]
 }
 
 
