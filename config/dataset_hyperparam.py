@@ -1,16 +1,17 @@
 hyperparam_space = {
-    "window_size_in_bytes_to_gen": [1, 2, 4, 8, 16],
+    "window_size_in_bytes_to_gen": [32, 64],
     "rand_seed_used_in_all_dataset_generation": 1234,
     "executable_used": ["A.dll", "B.exe"],
-    "number_of_samples_per_class": [100, 1_000, 10_000]
+    "max_number_of_samples_per_class": [1, 2]
 }
 
+dataset_root_dir = "/Volumes/ssd4work/828w_project_dataset"
 
 def get_dataset_name(hyperparam_dict):
     s = f"{hyperparam_dict['window_size_in_bytes_to_gen']}" \
         f"_{hyperparam_dict['rand_seed_used_in_all_dataset_generation']}" \
         f"_{hyperparam_dict['executable_used']}" \
-        f"_{hyperparam_dict['number_of_samples_per_class']}"
+        f"_{hyperparam_dict['max_number_of_samples_per_class']}"
 
     return s
 
@@ -19,7 +20,7 @@ def parse_dataset_name(s):
     d['window_size_in_bytes_to_gen'], \
     d['rand_seed_used_in_all_dataset_generation'], \
     d['executable_used'], \
-    d['number_of_samples_per_class'] \
+    d['max_number_of_samples_per_class'] \
         = s.split('_')
 
     return d
