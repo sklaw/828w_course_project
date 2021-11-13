@@ -1,11 +1,12 @@
 hyperparam_space = {
-    "window_size_in_bytes_to_gen": [32, 64],
+    "window_size_in_bytes_to_gen": [16],
     "rand_seed_used_in_all_dataset_generation": 1234,
-    "executable_used": ["A.dll", "B.exe"],
-    "max_number_of_samples_per_class": [1, 2]
+    "executable_used": ["kernel32.dll", "mscoree.dll", "ntdll.dll"],
+    "max_number_of_samples_per_class": 1_000
 }
 
-dataset_root_dir = "/Volumes/ssd4work/828w_project_dataset"
+dataset_root_dir = "/Volumes/ssd4work/Google Drive/My Drive/data for Colab/828w_project_dataset"
+exectutable_dir = "/Volumes/ssd4work/Google Drive/My Drive/data for Colab/828w_executables"
 
 def get_dataset_name(hyperparam_dict):
     s = f"{hyperparam_dict['window_size_in_bytes_to_gen']}" \
