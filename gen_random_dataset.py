@@ -38,6 +38,7 @@ def gen_random_dataset(hyperparam_dict, dataset_dir, force=False):
 
 if __name__ == "__main__":
     for d in get_all_hyperparam_dicts():
+        d["executable_used"] = "fake" + d["executable_used"]
         dataset_name = get_dataset_name(d)
         dataset_dir = join(dataset_root_dir, "random", dataset_name)
         gen_random_dataset(d, dataset_dir, force=True)
