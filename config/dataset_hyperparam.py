@@ -2,7 +2,8 @@ hyperparam_space = {
     "window_size_in_bytes_to_gen": [16],
     "rand_seed_used_in_all_dataset_generation": 1234,
     "executable_used": ["kernel32.dll", "mscoree.dll", "ntdll.dll", "vbe7.dll", "mscorjit.dll", "user32.dll"],
-    "max_number_of_samples_per_class": 1_000
+    "max_number_of_samples_per_class": 1250,
+    "validation_set_size_in_percentage": 0.2,
 }
 
 dataset_root_dir = "C:\\Users\\test\\PycharmProjects\\828w_course_project\\828w_project_dataset"
