@@ -58,26 +58,57 @@ def gen_real_dataset(hyperparam_dict, dataset_dir, exectutable_dir, force=False)
 
     window_radius = hyperparam_dict["window_size_in_bytes_to_gen"]//2
 
+    dataset_for_ML = join(dataset_dir, "dataset_for_ML")
+
     count = 0
-    class_dir = join(dataset_dir, "ret addr")
+    class_dir = join(dataset_for_ML, "ret addr")
     os.makedirs(class_dir)
     for idx in picked_ret_addr_index_set:
         sample = bytes(md.memory_bytes[idx - window_radius:idx + window_radius])
-        with open(join(class_dir, str(count) + '.hxv'), 'wb') as f:
+        with open(join(class_dir, "picked_ret_addr_index_set "+str(count) + '.hxv'), 'wb') as f:
             f.write(sample)
         count += 1
 
     count = 0
-    class_dir = join(dataset_dir, "not ret addr")
+    class_dir = join(dataset_for_ML, "not ret addr")
     os.makedirs(class_dir)
-    for idx in picked_symbol_index_set.union(picked_non_symbo_non_retaddr_index_set):
+    for idx in picked_symbol_index_set:
         sample = bytes(md.memory_bytes[idx - window_radius:idx + window_radius])
-        with open(join(class_dir, str(count) + '.hxv'), 'wb') as f:
+        with open(join(class_dir, "picked_symbol_index_set "+str(count) + '.hxv'), 'wb') as f:
             f.write(sample)
         count += 1
+
+    count = 0
+    class_dir = join(dataset_for_ML, "not ret addr")
+    os.makedirs(class_dir, exist_ok=True)
+    for idx in picked_non_symbo_non_retaddr_index_set:
+        sample = bytes(md.memory_bytes[idx - window_radius:idx + window_radius])
+        with open(join(class_dir, "picked_non_symbo_non_retaddr_index_set " + str(count) + '.hxv'), 'wb') as f:
+            f.write(sample)
+        count += 1
+
+    dataset_for_x64dbg = join(dataset_dir, "dataset_for_x64dbg")
+    os.makedirs(dataset_for_x64dbg, exist_ok=True)
+    with open(join(dataset_for_x64dbg, "memory_bytes"), 'wb') as f:
+        f.write(bytes(md.memory_bytes))
+
+    with open(join(dataset_for_x64dbg, "picked_ret_addr_index_set"), 'w') as f:
+        for idx in picked_ret_addr_index_set:
+            f.write(str(idx))
+            f.write(' ')
+
+    with open(join(dataset_for_x64dbg, "picked_symbol_index_set"), 'w') as f:
+        for idx in picked_symbol_index_set:
+            f.write(str(idx))
+            f.write(' ')
+
+    with open(join(dataset_for_x64dbg, "picked_non_symbo_non_retaddr_index_set"), 'w') as f:
+        for idx in picked_non_symbo_non_retaddr_index_set:
+            f.write(str(idx))
+            f.write(' ')
 
 if __name__ == "__main__":
     for d in get_all_hyperparam_dicts():
         dataset_name = get_dataset_name(d)
         dataset_dir = join(dataset_root_dir, "real", dataset_name)
-        gen_real_dataset(d, dataset_dir, exectutable_dir, force=False)
+        gen_real_dataset(d, dataset_dir, exectutable_dir, force=True)

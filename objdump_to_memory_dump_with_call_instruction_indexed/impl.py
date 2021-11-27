@@ -1,18 +1,27 @@
 import subprocess
-from os.path import realpath, join, dirname
+from os.path import realpath, join, dirname, exists
 import re
 
 base_dir = join(dirname(realpath(__file__)), '..')
 
-prog_disassembled_bytes = re.compile(r'([0-9a-zA-Z]+):([0-9a-zA-Z ]+)\t([<>a-z]+)')
-prog_symbol = re.compile(r'([0-9a-zA-Z]+)\s+<([a-zA-Z0-9_]+)>:')
+prog_disassembled_bytes = re.compile(r'([0-9a-zA-Z]+):\s*([0-9a-zA-Z ]+)\s*([\(\)<>a-z]*)')
+prog_symbol = re.compile(r'([0-9a-zA-Z]+)\s*<([a-zA-Z0-9_]+)>:')
 
 call_ins_opcodes = [0xff, 0xe8, 0x9A]
 
 class MemoryDump:
-    def __init__(self, path_to_executable):
-        cmd = ["objdump", "-D", "-z", "--section=.text", f"{path_to_executable}"]
-        output = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout
+    def __init__(self, path_to_executable, use_objdump_txt_if_possible=True):
+        if exists(path_to_executable):
+            if exists(path_to_executable+".objdump.txt") and use_objdump_txt_if_possible:
+                print("objdum.txt exists, gonna use it.")
+                with open(path_to_executable+".objdump.txt", 'r') as f:
+                    output = f.read()
+            else:
+                cmd = ["C:\\Program Files\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin\\objdump", "-D", "-z", "--section=.text", f"{path_to_executable}"]
+                output = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).stdout
+                output = str(output, 'ascii')
+        else:
+            raise Exception(path_to_executable+" does not exist.")
 
         prev_addr = None
         prev_memory_bytes = None
@@ -24,10 +33,11 @@ class MemoryDump:
         ret_retaddr_index = []
 
         base_addr = None
-        for line in output.splitlines():
-            line_str = str(line, 'ascii')
+        for line_str in output.splitlines():
+            # print(line_str)
             match = prog_disassembled_bytes.match(line_str)
             if match:
+                # print('re matched')
                 addr_str, memory_bytes_str, instruction = match.groups()
                 addr = int(addr_str, 16)
                 memory_bytes = [int(i, 16) for i in memory_bytes_str.strip().split(' ')]
@@ -40,8 +50,8 @@ class MemoryDump:
                     if n > len(memory_bytes):
                         print("*" * 20)
                         print(n)
-                        print(hex(prev_addr), prev_memory_bytes, prev_instruction)
-                        print(hex(addr), memory_bytes, instruction, flush=True)
+                        print(hex(prev_addr), [hex(mb) for mb in prev_memory_bytes], prev_instruction)
+                        print(hex(addr), [hex(mb) for mb in memory_bytes], instruction, flush=True)
                         raise Exception("A gap is found in memory bytes")
                     ret_bytes.extend(memory_bytes[-n:])
                     assert(len(ret_bytes) == addr+len(memory_bytes)-base_addr)
